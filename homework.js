@@ -45,9 +45,6 @@
      */
     function openPopupFromLink (link) {
         var href = link.href;
-            function onOk () {
-                window.location = href;
-            }
         if (newCreatePopup == undefined) {
             newCreatePopup = createPopup(href, onOk);
         }
@@ -55,6 +52,11 @@
             newCreatePopup(href, onOk);
         }
     }
+
+    function onOk (href) {
+        window.location = href;
+    }
+
 
 
     /**
@@ -79,7 +81,8 @@
             buttonsWrap = document.createElement('div'),
             openButton = document.createElement('div'),
             closeButton = document.createElement('div'),
-            onOpen = onOk;
+            onOpen = onOk,
+            currentHref = href;
 
         popupWrap.className = options.popupWrapClassName;
         popup.className = options.popupClassName;
@@ -91,7 +94,7 @@
         openButton.className = options.openButtonClassName;
         openButton.textContent = options.openButtonText;
         openButton.addEventListener('click', function () {
-            onOpen(href);
+            onOpen(currentHref);
         }, false);
         closeButton.className = options.closeButtonClassName;
         closeButton.textContent = options.closeButtonText;
@@ -106,6 +109,7 @@
         popupWrap.appendChild(popup);
         document.body.appendChild(popupWrap);
         return function (href,onOk) {
+            currentHref = href;
             onOpen = onOk;
             message.textContent = options.messageText + href;
             if (popupWrap.classList.contains(options.hideClassName)) {
