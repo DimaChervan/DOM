@@ -12,7 +12,6 @@
             openButtonText : 'Да',
             closeButtonClassName : 'close',
             closeButtonText : 'Нет',
-            linkParentClassName : 'main-menu',
             linkClassName : 'popup-link',
             hideClassName : 'hide'
         },
@@ -23,8 +22,8 @@
      * удаление эвента с документа
      */
     function init () {
-        var parent = document.getElementsByClassName(options.linkParentClassName)[0];
-        parent.addEventListener('click', _onMouseClick, false);
+       // var parent = document.getElementsByClassName(options.linkParentClassName)[0];
+        document.body.addEventListener('click', _onMouseClick, false);
         document.removeEventListener('DOMContentLoaded', init, false);
     }
 
@@ -46,8 +45,10 @@
      * @param {HTMLElement} link Ссылка с data-аттрибутами
      */
     function openPopupFromLink (link) {
-        var href = link.href,
-            onOk = createAction(href);
+        var href = link.href;
+            function onOk () {
+                window.location = href;
+            }
         if (newCreatePopup == undefined) {
             newCreatePopup = createPopup(href, onOk);
         }
@@ -56,16 +57,6 @@
         }
     }
 
-    /**
-     * Новое действие для кнопки "Да"
-     * @param href {String} адрес, на который произойдет переход
-     * @returns {Function} возврат функии для кнопки "Да"
-     */
-    function createAction (href) {
-        return function () {
-            window.location = href;
-        }
-    }
 
     /**
      * Скрывает попа с помощью добавления класса
@@ -88,7 +79,9 @@
             message = document.createElement('div'),
             buttonsWrap = document.createElement('div'),
             openButton = document.createElement('div'),
-            closeButton = document.createElement('div');
+            closeButton = document.createElement('div'),
+            onOpen = onOk;
+
         popupWrap.className = options.popupWrapClassName;
         popup.className = options.popupClassName;
         title.className = options.titleClassName;
@@ -98,7 +91,9 @@
         buttonsWrap.className = options.buttonsWrapClassName;
         openButton.className = options.openButtonClassName;
         openButton.textContent = options.openButtonText;
-        openButton.addEventListener('click', onOk, false);
+        openButton.addEventListener('click', function () {
+            onOpen(href);
+        }, false);
         closeButton.className = options.closeButtonClassName;
         closeButton.textContent = options.closeButtonText;
         closeButton.addEventListener('click', function () {
@@ -112,8 +107,8 @@
         popupWrap.appendChild(popup);
         document.body.appendChild(popupWrap);
         return function (href,onOk) {
+            onOpen = onOk;
             message.textContent = options.messageText + href;
-            openButton.addEventListener('click', onOk, false);
             if (popupWrap.classList.contains(options.hideClassName)) {
                 popupWrap.classList.remove(options.hideClassName);
             }
