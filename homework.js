@@ -22,7 +22,6 @@
      * удаление эвента с документа
      */
     function init () {
-       // var parent = document.getElementsByClassName(options.linkParentClassName)[0];
         document.body.addEventListener('click', _onMouseClick, false);
         document.removeEventListener('DOMContentLoaded', init, false);
     }
