@@ -1,5 +1,5 @@
 (function(){
-    document.body.addEventListener('click', _onMouseClick, false);
+    document.body.addEventListener('click', _onMouseClick, true);
 
     /**
      * Обработчик клика по ссылке с классом 'popup-link'
@@ -38,46 +38,60 @@
      * @returns {Function} возвращает функцию для изменения динамических данных
      */
     function createPopup (href, onOk) {
-        var popupWrap = document.createElement('div'),
-            currentHref = href,
-            message, openButton, closeButton,
-            options = {
-                popupWrapClassName : 'popup-wrap',
-                popupClassName : 'popup',
-                titleClassName : 'title',
-                messageClassName : 'message',
-                messageText : 'Вы уверены, что хотите перейти на ',
-                buttonsWrapClassName : 'buttons-wrap',
-                openButtonClassName : 'open',
-                closeButtonClassName : 'close',
-                hideClassName : 'hide'
-            };
-
-        popupWrap.className = options.popupWrapClassName;
-        popupWrap.innerHTML = '<div class=' + options.popupClassName + '>' +
-                                    '<div class=' + options.titleClassName + '>Переход на внешний ресурс</div>' +
-                                    '<div class=' + options.messageClassName + '>' + options.messageText + href + '</div>' +
-                                    '<div class=' + options.buttonsWrapClassName + '>' +
-                                    '<div class=' + options.openButtonClassName + '>Да</div>' +
-                                    '<div class=' + options.closeButtonClassName + '>Нет</div>' +
-                                    '</div>' +
-                               '</div>';
-        openButton = popupWrap.getElementsByClassName(options.openButtonClassName)[0];
-        openButton.addEventListener('click', function () {
+        var currentHref = href,
+            messageClassName = 'message',
+            messageText = 'Вы уверены, что хотите перейти на ',
+            openButtonClassName = 'open',
+            closeButtonClassName = 'close',
+            hideClassName = 'hide',
+            popupDomObject = {
+                tagName : 'div', className : 'popup-wrap', childElement : [
+                    { tagName: 'div', className : 'popup', childElement: [
+                        { tagName: 'div', className : 'title', textContent : 'Переход на внешний ресурс' },
+                        { tagName: 'div', className : messageClassName },
+                        { tagName: 'div', className : 'buttons-wrap', childElement: [
+                            { tagName: 'div', className : openButtonClassName, textContent : 'Да' },
+                            { tagName: 'div', className : closeButtonClassName, textContent : 'Нет' }
+                        ]
+                        }
+                    ]
+                    }
+                ]
+            },
+            popup = createDom (popupDomObject),
+            messageNode = createDom.elements[messageClassName][0];
+        messageNode.innerHTML = messageText + href;
+        createDom.elements[closeButtonClassName][0].addEventListener('click',function(){
+            popup.classList.add(hideClassName);
+        });
+        createDom.elements[openButtonClassName][0].addEventListener('click',function(){
             onOk(currentHref);
-        }, false);
-        openButton = undefined;
-        closeButton = popupWrap.getElementsByClassName(options.closeButtonClassName)[0];
-        closeButton.addEventListener('click', function () {
-            popupWrap.classList.add(options.hideClassName);
-        }, false);
-        closeButton = undefined;
-        message = popupWrap.getElementsByClassName(options.messageClassName)[0];
-        document.body.appendChild(popupWrap);
+        });
+        document.body.appendChild(popup);
         return function (href) {
             currentHref = href;
-            message.innerHTML = options.messageText + href;
-            popupWrap.classList.remove(options.hideClassName);
+            messageNode.innerHTML = messageText + href;
+            popup.classList.remove(hideClassName);
         }
     }
+
+    // Стоит ли переместить функцию ниже в createPopup ?
+    function createDom (domObject) {
+        var element = document.createElement(domObject.tagName);
+        element.className = domObject.className;
+        if (domObject.textContent) {
+            element.innerHTML = domObject.textContent;
+        }
+        if (domObject.childElement) {
+              domObject.childElement.forEach(function (item) {
+                  element.appendChild(createDom(item));
+              });
+        }
+        if (!createDom.elements[domObject.className]) {
+            createDom.elements[domObject.className] = [];
+        }
+        createDom.elements[domObject.className].push(element);
+        return element;
+    }
+    createDom.elements = {};
 })();
