@@ -7,8 +7,8 @@
      * @private
      */
     function _onMouseClick (e) {
-        e.preventDefault();
         if (e.target.classList.contains('popup-link')) {
+            e.preventDefault();
             openPopupFromLink(e.target);
         }
     }
