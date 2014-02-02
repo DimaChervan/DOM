@@ -8,7 +8,7 @@
      */
     function _onMouseClick (e) {
         if (e.target.classList.contains('popup-link')) {
-            e.preventDefault();
+			e.preventDefault();
             openPopupFromLink(e.target);
         }
     }
@@ -45,13 +45,13 @@
             closeButtonClassName = 'close',
             hideClassName = 'hide',
             popupDomObject = {
-                tagName : 'div', className : 'popup-wrap', childElement : [
-                    { tagName: 'div', className : 'popup', childElement: [
-                        { tagName: 'div', className : 'title', textContent : 'Переход на внешний ресурс' },
-                        { tagName: 'div', className : messageClassName },
-                        { tagName: 'div', className : 'buttons-wrap', childElement: [
-                            { tagName: 'div', className : openButtonClassName, textContent : 'Да' },
-                            { tagName: 'div', className : closeButtonClassName, textContent : 'Нет' }
+                tag : 'div', cls : 'popup-wrap', children : [
+                    { tag: 'div', cls : 'popup', children: [
+                        { tag: 'div', cls : 'title', text : 'Переход на внешний ресурс' },
+                        { tag: 'div', cls : messageClassName },
+                        { tag: 'div', cls : 'buttons-wrap', children: [
+                            { tag: 'div', cls : openButtonClassName, text : 'Да' },
+                            { tag: 'div', cls : closeButtonClassName, text : 'Нет' }
                         ]
                         }
                     ]
@@ -75,22 +75,21 @@
         }
     }
 
-    // Стоит ли переместить функцию ниже в createPopup ?
     function createDom (domObject) {
-        var element = document.createElement(domObject.tagName);
-        element.className = domObject.className;
-        if (domObject.textContent) {
-            element.innerHTML = domObject.textContent;
+        var element = document.createElement(domObject.tag);
+        element.className = domObject.cls;
+        if (domObject.text) {
+            element.innerHTML = domObject.text;
         }
-        if (domObject.childElement) {
-              domObject.childElement.forEach(function (item) {
+        if (domObject.children) {
+              domObject.children.forEach(function (item) {
                   element.appendChild(createDom(item));
               });
         }
-        if (!createDom.elements[domObject.className]) {
-            createDom.elements[domObject.className] = [];
+        if (!createDom.elements[domObject.cls]) {
+            createDom.elements[domObject.cls] = [];
         }
-        createDom.elements[domObject.className].push(element);
+        createDom.elements[domObject.cls].push(element);
         return element;
     }
     createDom.elements = {};
