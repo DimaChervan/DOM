@@ -58,13 +58,14 @@
                     }
                 ]
             },
-            popup = createDom (popupDomObject),
-            messageNode = createDom.elements[messageClassName][0];
+            elementsCache = {},
+            popup = createDom (popupDomObject, elementsCache),
+            messageNode = elementsCache[messageClassName][0];
         messageNode.innerHTML = messageText + href;
-        createDom.elements[closeButtonClassName][0].addEventListener('click',function(){
+        elementsCache[closeButtonClassName][0].addEventListener('click',function(){
             popup.classList.add(hideClassName);
         });
-        createDom.elements[openButtonClassName][0].addEventListener('click',function(){
+        elementsCache[openButtonClassName][0].addEventListener('click',function(){
             onOk(currentHref);
         });
         document.body.appendChild(popup);
@@ -75,7 +76,7 @@
         }
     }
 
-    function createDom (domObject) {
+    function createDom (domObject, elementsObj) {
         var element = document.createElement(domObject.tag);
         element.className = domObject.cls;
         if (domObject.text) {
@@ -83,14 +84,13 @@
         }
         if (domObject.children) {
               domObject.children.forEach(function (item) {
-                  element.appendChild(createDom(item));
+                  element.appendChild(createDom(item, elementsObj));
               });
         }
-        if (!createDom.elements[domObject.cls]) {
-            createDom.elements[domObject.cls] = [];
+        if (!elementsObj[domObject.cls]) {
+            elementsObj[domObject.cls] = [];
         }
-        createDom.elements[domObject.cls].push(element);
+        elementsObj[domObject.cls].push(element);
         return element;
     }
-    createDom.elements = {};
 })();
